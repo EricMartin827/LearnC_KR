@@ -43,16 +43,20 @@ main(void)
                 }
         }
 
+        /*Account for file not ending in NEWLINE*/
         if (len > 0)
                 data[len]++;
+
         for (c = 0; c <= blen; c++) {
-                int i = 0;
+                if (data[c] == 0)
+                        continue;
                 printf("\nLength %d: ", c);
+                int i = 0;
                 while (i < data[c]) {
-                        printf("*");
+                        putchar('*');
                         i++;
                 }
-                printf("\n");
         }
+        putchar('\n');
         return 0;
 }

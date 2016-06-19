@@ -7,7 +7,7 @@ static int
 readline(char *buf, int limit)
 {
         int c, i;
-
+        
         for (i = 0; (i < limit - 1)
                      && ((c = getchar()) != EOF)
                      && (c != NEWLINE); i++) {

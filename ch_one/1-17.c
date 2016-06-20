@@ -19,8 +19,7 @@ readline(char **ibuf, int limit, int *save)
 {
         int c, i;
         char *temp;
-        for (i = 0; i < limit - 1
-                     && (c = getchar()) != EOF
+        for (i = 0; (c = getchar()) != EOF
                      && c != NEWLINE; i++) {
                 if (i == limit - 2) {
                         limit<<=1;
@@ -35,7 +34,7 @@ readline(char **ibuf, int limit, int *save)
                 }
                 (*ibuf)[i] = c;
         }
-        if (c == '\n')n
+        if (c == '\n')
                 (*ibuf)[i++] = c;
         (*ibuf)[i] = '\0';
         return i;
@@ -57,7 +56,7 @@ addline(struct record *r, int index, char *str)
                 }
                 r->lines = temp;
         }
-        (r->capacity)[index++] = str;
+        (r->lines)[index++] = str;
         return index;
 }
 
@@ -68,13 +67,19 @@ main(void)
         char line;
         int len;
         int lim = LINE_LENGTH;
+        int sav;
         int c, i;
         
         col.lines = malloc(NUM_LINES * lines[0]);
         col.capacity = NUM_LINES;
-        
-        for (i = 0; i < 
-)
+
+        while ((len = readline(&col, lim, &sav)) != 0) {
+                if (len < 0) {
+                        perror("failed to add line");
+                        goto out;
+                }
+        }
+out:
 }
 
 

@@ -70,12 +70,14 @@ main(void)
                                 goto out;
                         }
                         longest = temp;
+                        limit = save;
                 } 
                 if (len > max) {
                         max = len;
                         copy(longest, line);
                 }
         }
+        ret = SUCCESS;
 out:
         if (max > 0) {
                 printf("\nlongest line:\n%s\nlength = %d\n",
@@ -83,6 +85,5 @@ out:
         }
         free(line);
         free(longest);
-
         return ret;
 }

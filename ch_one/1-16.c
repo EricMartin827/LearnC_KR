@@ -12,8 +12,7 @@ readline(char **ibuf, int limit, int *save)
 {
         int c, i;
         char *temp;
-        for (i = 0; i < limit - 1
-                     && (c = getchar()) != EOF
+        for (i = 0; (c = getchar()) != EOF
                      && c != NEWLINE; i++) {
                 if (i == limit - 2) {
                         limit<<=1;
@@ -56,6 +55,7 @@ main(void)
         longest = (line = malloc(INITIAL_CAP)) ? malloc(INITIAL_CAP) : NULL;
 
         if (!longest && !line) {
+		perror("malloc");
                 ret = FAILURE;
                 goto out;
         }

@@ -24,7 +24,7 @@ readline(char **ibuf, uint32_t *limit, uint8_t *stop)
 				errno = EOVERFLOW;
 				return -1;
 			}
-			if ((temp = realloc(*ibuf, lim + 2)) == NULL) {
+			if ((temp = realloc(*ibuf, lim)) == NULL) {
 				return -1;
 			}
 			*ibuf = temp;

@@ -10,13 +10,12 @@
 #define FAILURE -1
 
 static int
-readline(char **ibuf, uint32_t *limit)
+readline(char **ibuf, uint32_t *limit, uint8_t *stop)
 {
 	int c, k;
 	uint32_t lim = *limit;
 	uint32_t i = 0;
 	char *temp;
-		
 
 	while ((c = getchar()) != EOF && c != NEWLINE) {
 		if (i == lim) {
@@ -31,17 +30,17 @@ readline(char **ibuf, uint32_t *limit)
 			*ibuf = temp;
 			*limit = lim;
 		}
-		printf("%c", c);
 		(*ibuf)[i++] = c;
 	}
 	while ((i > 0) && (((k = (*ibuf)[i - 1]) == TAB) || (k == BLANK)))
 		i--;
 
-	if ((i != 0) && (c == NEWLINE)) {
-		(*ibuf)[i++] = c;
-		
-	}
-	(*ibuf)[i] = '\0';
+        if (i > 0)
+                (*ibuf)[i++] = NEWLINE;
+        if (c == EOF)
+                *stop = 1;
+
+        (*ibuf)[i] = '\0';
 	return i;
 }
 
@@ -49,20 +48,21 @@ int
 main(void)
 {
 	int len;
-	uint32_t lim;
 	int ret;
-	char *in = NULL;
-	char *out;
-	lim = LINE_LENGTH;
+        uint32_t lim = LINE_LENGTH;
+        uint8_t stop = 0u;
+	char *line = NULL;
 
-	if ((line = malloc((LINE_LENGTH * sizeof(line[0])) + 2)) == NULL) {
-		perror("mallic");
+	if ((line = malloc((LINE_LENGTH * sizeof(line[0])))) == NULL) {
+		perror("malloc");
 		ret = FAILURE;
 		goto out;
 	}
 	
-	while ((len = readline(&line, &lim)) != 0) {
-		if (len < 0) {
+        while (!stop) {
+                if ((len = readline(&line, &lim, &stop)) == 0)
+                        continue;
+                if (len < 0) {
 			perror("failed to readline");
 			ret = FAILURE;
 			goto out;

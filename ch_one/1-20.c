@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <errno.h>
 
-#define LINE_LENGTH 10
-#define NEWLINE '\n'
 #define FAILURE -1
 #define SUCCESS 0
+#define TAB '\t'
+#define TAB_SPACE 4
+#define SPACE ' '
+#define NEWLINE '\n'
+#define OFFSET (TAB_SPACE + 1)
+#define LINE_DEFAULT 10
 
 #define INIT(T, A, S) ({                                          \
                         const T *_A = (A);                        \
@@ -17,15 +20,16 @@
                         T *_A = (A);                                    \
                         const size_t _S = (S);                          \
                         _A = realloc(A, _S) ;                           \
-                        (_A) ? (A = _A) : (free(A), A = NULL);})       
+                        (_A) ? (A = _A) : (free(A), A = NULL);})
 
-                        
 static int
 read_l(char **ibuf, size_t *limit)
 {
         int c;
         size_t ii;
-        size_t lim = (*limit) - 1;
+        size_t lim = (ii = *limit, ii > (OFFSET))
+                ? (ii - OFFSET)
+                : (LINE_DEFAULT - OFFSET);
 
         for (ii = 0u; ((c = getchar()) != EOF) &&
                      (c != NEWLINE); ii++) {
@@ -40,7 +44,13 @@ read_l(char **ibuf, size_t *limit)
                         perror("You overflowed the limit!");
                         return FAILURE;
                 }
-                (*ibuf)[ii] = c;
+                if (c == TAB) {
+                        size_t jj;
+                        for (jj = 0u; jj < TAB_SPACE; jj++)
+                                (*ibuf)[ii++] = SPACE;
+                } else {
+                        (*ibuf)[ii] = c;
+                }
         }
         if (c == NEWLINE)
                 (*ibuf)[ii++] = c;
@@ -48,37 +58,19 @@ read_l(char **ibuf, size_t *limit)
         return ii;
 }
 
-static void
-rev_l(char **ibuf, size_t len)
-{
-        size_t ii = 0;
-        size_t jj = (len > 2) ? (len - 2) : 0;
-        
-        while (jj > ii) {
-                char temp = (*ibuf)[ii];
-                (*ibuf)[ii++] = (*ibuf)[jj];
-                (*ibuf)[jj--] = temp;
-        }
-}
-
 int
 main(void)
 {
         int len;
         char *line = NULL;
-        size_t lim = LINE_LENGTH;
-        INIT(char, line, lim);
+        size_t limit = LINE_DEFAULT;
+        INIT(char, line, LINE_DEFAULT);
         if (!line) {
-                perror("You require more memory!");
+                perror("You Require More Memory!");
                 return FAILURE;
         }
-        while ((len = read_l(&line, &lim)) > 0) {
-                rev_l(&line, len);
+        while ((len = read_l(&line, &limit)) > 0)
                 fprintf(stdout, "%s", line);
-        }
-        if (len < 0)
-                return FAILURE;
-        free(line);
         
-        return 0;
+        return (len == 0) ? (free(line), SUCCESS) : FAILURE;
 }

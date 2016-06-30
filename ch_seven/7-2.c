@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#define MAXLINE 100
+#define MAXLINE 20
 #define NEWLINE '\n'
 
 static int
@@ -15,8 +15,7 @@ readline(char *buf, size_t limit)
 		     c != NEWLINE; ii++) {
 		buf[ii] = c;
 	}
-	if (c == NEWLINE)
-		buf[ii++] = c;
+	buf[ii++] = NEWLINE;
 	buf[ii] = '\0';
 	return ii;
 }
@@ -27,11 +26,10 @@ print_it(const char *line)
 	char c;
 	size_t ii = 0u;
 	while ((c = line[ii++])) {
-		if (isprint(c))
+		if (isprint(c) || c == NEWLINE)
 			printf("%c", c);
 		else
 			printf("%x", c);
-		
 	}
 }
 
